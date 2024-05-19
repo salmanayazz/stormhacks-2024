@@ -13,6 +13,7 @@ export default function CreateInterview() {
     company: "",
     jobPosting: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { createInterview } = useInterviews();
 
@@ -20,8 +21,10 @@ export default function CreateInterview() {
     setFormData({ ...formData, [field]: event.target.value });
   };
 
-  const handleSubmit = () => {
-    createInterview(formData.position, formData.company, formData.jobPosting);
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    await createInterview(formData.position, formData.company, formData.jobPosting);
+    setIsLoading(false);
   };
 
   return (
@@ -56,7 +59,14 @@ export default function CreateInterview() {
         variant="filled"
       />
 
-      <Button onClick={handleSubmit} colorScheme="blue" variant="solid">
+      <Button 
+        colorScheme="teal" 
+        variant="solid"
+        mr={2}
+        isLoading={isLoading}
+        loadingText="Submitting"
+        onClick={handleSubmit}
+      >
         Submit
       </Button>
     </Box>
