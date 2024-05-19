@@ -24,11 +24,6 @@ function App() {
 
               <Route path="/" element={
                           <ProtectedRoute>
-                            <Home/>
-                          </ProtectedRoute>
-              } />
-              <Route path="/interviews/create" element={
-                          <ProtectedRoute>
                             <CreateInterview />
                           </ProtectedRoute>
               } />

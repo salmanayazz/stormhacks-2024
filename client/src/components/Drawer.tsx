@@ -34,7 +34,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
         <IconButton icon={<CloseIcon />} onClick={onClose} />
       </Box>
       <Box px={4}>
-        <Button variant="link" leftIcon={<AddIcon />} mb={3} as={NavLink} to="/interviews/create">Create Interview</Button>
+        <Button variant="link" leftIcon={<AddIcon />} mb={3} as={NavLink} to="/">Create Interview</Button>
         {interviews.map((interview) => (
           <Button
             key={interview._id}
