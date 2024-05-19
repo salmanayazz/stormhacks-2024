@@ -13,6 +13,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../contexts/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Copyright(props: any) {
   return (
@@ -37,19 +39,56 @@ export default function SignIn() {
   const navigate = useNavigate();
   React.useEffect(() => {
     if (authState.user) {
-        // redirect to home page if already logged in
         navigate("/");
     }
     }, [authState.user, navigate]);
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        loginUser({username, password});
-        setUsername("");
-        setPassword("");
+        if(username!== "" && password !== ""){
+            loginUser({username, password});
+            setUsername("");
+            setPassword("");
+        }
+        else if(username == "" && password == ""){
+            toast.error('Username and Password cannot be empty',{
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        } 
+        else if(username == ""){
+            toast.error('Username cannot be empty', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+        else if(password == ""){
+            toast.error('Password cannot be empty',{
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+
+        
       };
 
   return (
     <ThemeProvider theme={defaultTheme}>
+        <ToastContainer />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -91,10 +130,6 @@ export default function SignIn() {
               autoComplete="current-password"
               value={password}
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               type="submit"
               fullWidth
@@ -104,11 +139,6 @@ export default function SignIn() {
               Sign In
             </Button>
             <Grid container>
-              {/* <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid> */}
               <Grid item>
                 <Link component={RouterLink} to="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
