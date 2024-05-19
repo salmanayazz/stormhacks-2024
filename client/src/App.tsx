@@ -17,10 +17,10 @@ function App() {
         <InterviewsProvider>
         <Router>
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/" element={<Navbar/>} >
               <Route path="/" element={<Home/>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
               <Route path="/interviews/create" element={<CreateInterview />} />
               <Route path="/interviews/:interviewId" element={<Interview />} />
             </Route>
