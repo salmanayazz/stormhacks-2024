@@ -105,32 +105,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // /*pdf implementation ends*/
 
-
-const pdfParse = require("pdf-parse");
-const { ResumeModel } = require("./models/Resume");
-
-app.post("/uploadresume", upload.single("file"), async (req, res) => {
-  try {
-    const result = await pdfParse(req.file.path);
-    const existingResume = await ResumeModel.findOne({ username: req.session.username });
-
-    if (existingResume) {
-      existingResume.parsedResume = result.text;
-      await existingResume.save();
-      res.status(200).send("Resume updated successfully");
-    } else {
-      await ResumeModel.create({
-        username: req.session.username,
-        parsedResume: result.text
-      });
-      res.status(200).send("New resume created");
-    }
-  } catch (err) {
-    console.error("Error processing upload:", err);
-    res.status(500).send("Error processing upload");
-  }
-});
-
 app.use(
   cors({
     credentials: true,
@@ -176,6 +150,32 @@ app.get("/openai", async (req, res) => {
   let content = await main();
   res.send(content);
 })
+
+
+const pdfParse = require("pdf-parse");
+const { ResumeModel } = require("./models/Resume");
+
+app.post("/uploadresume", upload.single("file"), async (req, res) => {
+  try {
+    const result = await pdfParse(req.file.path);
+    const existingResume = await ResumeModel.findOne({ username: req.session.username });
+
+    if (existingResume) {
+      existingResume.parsedResume = result.text;
+      await existingResume.save();
+      res.status(200).send("Resume updated successfully");
+    } else {
+      await ResumeModel.create({
+        username: req.session.username,
+        parsedResume: result.text
+      });
+      res.status(200).send("New resume created");
+    }
+  } catch (err) {
+    console.error("Error processing upload:", err);
+    res.status(500).send("Error processing upload");
+  }
+});
 
 // app.post("/uploadresume",upload.single("file"), async(req,res)=>{
 //   console.log(req.file);
