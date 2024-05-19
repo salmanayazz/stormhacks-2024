@@ -1,11 +1,13 @@
 import { Button } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const signupHandler = () =>{
-
+        navigate("/signup")
     }
     const loginHandler = () =>{
-        
+        navigate("/login")
     }
     return (
     <div className="flex font-sedan-sc m-2 font-semibold text-2xl h-12 border-grey border-b-2 justify-between">
@@ -42,12 +44,8 @@ const Navbar = () => {
           color: "white",
         },
       }}
-      onClick={loginHandler}
-      >Login</Button>
-      
-        </div>
-        
-
+      onClick={loginHandler}>Login</Button>
+      </div>
     </div>
   )
 }
