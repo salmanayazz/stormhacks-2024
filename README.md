@@ -47,6 +47,11 @@ In addition to consolidating job listings, we are developing a sophisticated fea
 
 Our goal is to create a seamless, intelligent job search and career enhancement platform that empowers users to navigate the job market more effectively and achieve their career aspirations.
 
+### Installation
+
+To run the server, click [here](https://github.com/salmanayazz/stormhacks-2024/tree/main/server)
+To run the client, click [here](https://github.com/salmanayazz/stormhacks-2024/tree/main/client)
+
 ### Meet our Team
 
 [Barun Gambhir](https://github.com/barunGambhir), [Salman Ayaz](https://github.com/salmanayazz), [Gurkirat Singh](https://github.com/GurkiratSingh111)
