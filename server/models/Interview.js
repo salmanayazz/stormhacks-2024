@@ -1,15 +1,31 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, trusted } = require("mongoose");
 
 var interviewSchema = new Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
   },
-  questions: {
+  company: {
     type: String,
-    required: true,
+    required: true
   },
+  position: {
+    type: String,
+    required: true
+  },
+  info: [
+    {
+        question:{
+            type: String
+        },
+        answer:{
+            type:String
+        },
+        feedback:{
+            type:String
+        }
+    },
+]
 });
 
 const InterviewModel = model("Interview", interviewSchema);

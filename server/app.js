@@ -101,7 +101,7 @@ app.post("/interviews", async (req, res) => {
     const { position, company, jobPosting } = req.body;
     let getQuestions = await createInterviewQuestions(position, company, jobPosting);
     const newInterview = await InterviewModel.create({
-      username: "Name4",
+      username: req.session.username,
       questions: getQuestions,
     });
     res
@@ -114,7 +114,6 @@ app.post("/interviews", async (req, res) => {
       .json({ error: "Failed to generate prompts and paragraphs" });
   }
 });
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
