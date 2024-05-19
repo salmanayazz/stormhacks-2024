@@ -1,6 +1,6 @@
 import { Box, Button, IconButton } from '@chakra-ui/react';
-import { CloseIcon, AddIcon, DeleteIcon,  } from '@chakra-ui/icons';
-import { NavLink } from 'react-router-dom';
+import { CloseIcon, AddIcon } from '@chakra-ui/icons';
+import { NavLink, useParams } from 'react-router-dom';
 import { useInterviews } from '../contexts/interviews/InterviewContext';
 import { useEffect } from 'react';
 
@@ -11,6 +11,7 @@ interface DrawerProps {
 
 export default function Drawer({ isOpen, onClose }: DrawerProps) {
   const { interviews, getInterviews } = useInterviews();
+  const { interviewId } = useParams();
 
   useEffect(() => {
     getInterviews();
@@ -36,17 +37,24 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
         {interviews.map((interview) => (
           <Button
             key={interview._id}
-            variant="link"
-            leftIcon={<DeleteIcon />}
             mb={3}
             as={NavLink}
             to={`/interviews/${interview._id}`}
             onClick={onClose}
+            variant="solid"
+            bg={interview._id === interviewId ? undefined : 'transparent'}
+            width="100%"
+            paddingX={2}
+            justifyContent="flex-start"
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textOverflow="ellipsis"
           >
-            {interview.position}
+            {interview.position}, {interview.company}
           </Button>
         ))}
       </Box>
     </Box>
   );
 };
+
