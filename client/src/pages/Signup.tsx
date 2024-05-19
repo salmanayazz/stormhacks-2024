@@ -13,6 +13,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from "../contexts/auth/AuthContext";
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 function Copyright(props: any) {
@@ -43,14 +44,50 @@ export default function SignUp() {
     }
     }, [authState.user, navigate]);
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    signupUser({username, password});
-    setUsername("");
-    setPassword("");
+        event.preventDefault();
+        if(username!== "" && password !== ""){
+            signupUser({username, password});
+            setUsername("");
+            setPassword("");
+        }
+        else if(username == "" && password == ""){
+            toast.error('Username and Password cannot be empty',{
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        } 
+        else if(username == ""){
+            toast.error('Username cannot be empty', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+        else if(password == ""){
+            toast.error('Password cannot be empty',{
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
   };
 
   return (
     <ThemeProvider theme={defaultTheme}>
+        <ToastContainer/>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
