@@ -13,8 +13,15 @@ var interviewSchema = new Schema({
     type: String,
     required: true
   },
+  jobPosting: {
+    type: String,
+    required: true
+  },
   info: [
     {
+        kind:{
+            type:String
+        },
         question:{
             type: String
         },

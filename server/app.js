@@ -81,29 +81,65 @@ app.get("/openai", async (req, res) => {
   res.send(content);
 })
 
-const createInterviewQuestions = async (position, company, jobPosting) => {
+const createInterviewQuestions = async (position, company, jobPosting, kind) => {
   try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: "Please create 5 technical and 5 behavorial interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting}]
-  });
-  
-      return response.choices[0].message.content;
-    } catch (error) {
-      console.error(error);
-      throw new Error("Failed to generate chat completion");
-    }
-};
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
+    });
 
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to generate chat completion");
+  }
+};
 
 app.post("/interviews", async (req, res) => {
   try {
     const { position, company, jobPosting } = req.body;
-    let getQuestions = await createInterviewQuestions(position, company, jobPosting);
-    const newInterview = await InterviewModel.create({
-      username: req.session.username,
-      questions: getQuestions,
-    });
+
+    let getTechQuestions = await createInterviewQuestions(position, company, jobPosting, "Technical");
+    let getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavorial");
+
+    const techArray = func(getTechQuestions);
+    const behavArray = func(getBehavQuestions);
+
+    let i = 0;
+    while (i < techArray.length) {
+
+      await InterviewModel.create({
+        username: req.session.username,
+        company: company,
+        position: position,
+        jobPosition: jobPosting,
+        info: [{
+          kind: "technical",
+          question: techArray[i],
+          answer: '',
+          feedback: ''
+        }]
+      });
+
+      await InterviewModel.create({
+        username: req.session.username,
+        company: company,
+        position: position,
+        jobPosition: jobPosting,
+        info: [{
+          kind: "Behavorial",
+          question: behavArray[i],
+          answer: '',
+          feedback: ''
+        }]
+      });
+
+      i++;
+    }
+
+    
+
+
     res
       .status(200)
       .json("Data Entered");
@@ -131,17 +167,11 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-async function main(){
-  // const completion = await openai.chat.completions.create({
-  //   messages: [{ role: "system", content: "Qualifications include a Degree in Architecture, Urban Land Economics, Urban Planning and Design, or Engineering in addition to a minimum of 10 years of relevant experience in development and construction in a leadership role and/or an equivalent combination of education, training and experience. The role requires thorough knowledge of architectural design, facility planning, engineering and construction principles and practices as well as BC Building Code, the rules, regulations, and policies governing the construction industry; and Project Management Body of Knowledge (PMBOK) guidelines and standards. You will have the ability to direct the initiation and planning of a variety of major civic buildings and facilities; establish and maintain effective working relationships with a wide variety of internal and external contacts and stakeholders. Working independently and within a team environment, you will partake in problem solving; establishing priorities and accomplish objectives in a timely manner; as well as leading and resolving contract disputes. Other skills required would include the use of various software applications such as MS Office, Enterprise Resource Planning (ERP) and Project Management software. A Driver’s Licence for the Province of British Columbia"}],
-  //   model: "gpt-3.5-turbo",
-  // });
-
-  // return completion.choices[0].message.content;
+async function main() {
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: "Please create 5 technical and 5 behavorial interview questions for the position Software Engineer for the company Amazon with the position description Design, develop, and maintain high-performance, scalable software applications"}]
+      messages: [{ role: "user", content: "Please create 5 technical and 5 behavorial interview questions for the position Software Engineer for the company Amazon with the position description Design, develop, and maintain high-performance, scalable software applications" }]
     });
 
     return response.choices[0].message.content;
@@ -150,9 +180,5 @@ async function main(){
     throw new Error("Failed to generate chat completion");
   }
 }
-
-
-
-
 
 module.exports = app;
