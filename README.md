@@ -49,7 +49,5 @@ Our goal is to create a seamless, intelligent job search and career enhancement 
 
 ### Meet our Team
 
-[Barun Gambhir](https://github.com/barunGambhir)
-[Salman Ayaz](https://github.com/salmanayazz)
-[Gurkirat Singh](https://github.com/GurkiratSingh111)
+[Barun Gambhir](https://github.com/barunGambhir), [Salman Ayaz](https://github.com/salmanayazz), [Gurkirat Singh](https://github.com/GurkiratSingh111)
 
