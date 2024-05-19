@@ -22,7 +22,7 @@ const Navbar = () => {
           icon={<HamburgerIcon />} 
           onClick={isOpen ? onClose : onOpen} 
         /> }
-        
+
         <Box flex="1" textAlign="center" fontWeight="bold" fontSize={{ base: 'lg', md: 'xl' }}>
           InterviewPrep
         </Box>
@@ -50,7 +50,7 @@ const Navbar = () => {
       <Box position="fixed" bottom="0" left="0" right="0" zIndex="drawer" display={{ base: isOpen ? 'block' : 'none', md: 'none' }}>
         <CustomDrawer isOpen={isOpen} onClose={onClose} />
       </Box>
-      <Box ml={isOpen ? { base: '0', md: '240px' } : '0'} transition="margin 0.3s">
+      <Box ml={isOpen ? { base: '0', md: '20rem' } : '0'} transition="margin 0.3s">
         <Outlet />
       </Box>
     </>

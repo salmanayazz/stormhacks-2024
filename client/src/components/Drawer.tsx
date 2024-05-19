@@ -23,10 +23,11 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
       left={0}
       top={0}
       bottom={0}
-      width={isOpen ? '240px' : '0'}
+      width={isOpen ? '20rem' : '0'}
       overflowY="auto"
       transition="width 0.3s"
       zIndex={10}
+      bg="white"
     >
       <Box px={4} py={3} display="flex" justifyContent="space-between" alignItems="center">
         <Box fontSize="xl" fontWeight="bold">Interviews</Box>
