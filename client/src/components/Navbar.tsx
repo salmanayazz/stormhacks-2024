@@ -4,6 +4,7 @@ import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { useNavigate, Outlet } from 'react-router-dom';
 import CustomDrawer from './Drawer';
 import { useAuth } from '../contexts/auth/AuthContext';
+import ResumeUpload from './ResumeUpload';
 
 const Navbar = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -20,12 +21,14 @@ const Navbar = () => {
         {!isOpen &&
         <IconButton 
           icon={<HamburgerIcon />} 
-          onClick={isOpen ? onClose : onOpen} 
+          onClick={isOpen ? onClose : onOpen}
         /> }
 
         <Box flex="1" textAlign="center" fontWeight="bold" fontSize={{ base: 'lg', md: 'xl' }}>
           InterviewPrep
         </Box>
+        <ResumeUpload/>
+        <Box m={2}/>
         <Flex alignItems="center">
           {authState?.user ? (
             <Button 

@@ -1,47 +1,63 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { axiosInstance } from '../contexts/AxiosInstance';
+import { Button, Input } from '@chakra-ui/react';
+import { FaFileAlt } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResumeUpload: React.FC = () => {
-    const [title, setTitle] = useState<string>("");
-    const [file, setFile] = useState<any>("");
+    const [file, setFile] = useState<File | null>(null);
 
-
-    const submitFile = async (e: any) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("file", file);
-        console.log(title,file);
-        const result = await axios.post("http://localhost:3001/uploadresume", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-            
-        });
-        console.log(result);
-
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files ? e.target.files[0] : null;
+        if (selectedFile) {
+            setFile(selectedFile);
+            await uploadFile(selectedFile);
+        }
     };
 
-    return <form onSubmit={submitFile}>
-        <input
-        value={title}
-        type='text'
-        className="form-control" 
-        placeholder="Title"
-        required
-        onChange={(e) => setTitle (e.target .value)}
-        />
-        <input
-        type='file'
-        className='form-control'
-        accept='application/pdf'
-        required
-        onChange={(e) => setFile(e.target.files[0])}
-        />
-        <button type='submit'>Upload</button>
+    const uploadFile = async (file: File) => {
+        const formData = new FormData();
+        formData.append("file", file);
 
-    </form>
-  
+        try {
+            const result = await axiosInstance.post("/uploadresume", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            console.log(result);
+
+            toast.success("Resume uploaded successfully", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                progress: undefined,
+                theme: "light",
+            });
+
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    };
+
+    return (
+        <form>
+            <ToastContainer />
+            <Input
+                type='file'
+                accept='application/pdf'
+                onChange={handleFileChange}
+                display="none"
+                id="file-upload"
+            />
+            <Button as="label" htmlFor="file-upload" leftIcon={<FaFileAlt />}>
+                Resume
+            </Button>
+        </form>
+    );
 };
 
 export default ResumeUpload;
