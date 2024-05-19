@@ -14,6 +14,7 @@ var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
 
 const { InterviewModel } = require("./models/Interview");
+const { QuestionsModel } = require("./models/Questions");
 
 let OpenAI = require('openai');
 
@@ -81,6 +82,8 @@ app.get("/openai", async (req, res) => {
   res.send(content);
 })
 
+// request to OpenAI API to generate interview questions
+
 const createInterviewQuestions = async (position, company, jobPosting, kind) => {
   try {
     const response = await openai.chat.completions.create({
@@ -95,8 +98,10 @@ const createInterviewQuestions = async (position, company, jobPosting, kind) => 
   }
 };
 
+// parse the OpenAI response into different questions
+
 const parseInterviewQuestion = (value) =>{
-  const questions = str.split(/(?=\d\.\s)/);
+  const questions = value.split(/(?=\d\.\s)/);
   const listOfQuestions = questions.map(q => q.replace(/^\d\.\s/, ''))
   return listOfQuestions;
 }
@@ -105,57 +110,59 @@ app.post("/interviews", async (req, res) => {
   try {
     const { position, company, jobPosting } = req.body;
 
+    // TODO: validate the arguments
+
     let getTechQuestions = await createInterviewQuestions(position, company, jobPosting, "Technical");
-    let getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavorial");
+    let getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavioral");
 
-    const techArray = func(getTechQuestions);
-    const behavArray = func(getBehavQuestions);
+    const techQuestions = parseInterviewQuestion(getTechQuestions);
+    const behavQuestions = parseInterviewQuestion(getBehavQuestions);
 
-    let i = 0;
-    while (i < techArray.length) {
+    const techQuestionIds = await createQuestionsInDatabase(techQuestions, "Technical");
+    const behavQuestionIds = await createQuestionsInDatabase(behavQuestions, "Behavioral");
 
-      await InterviewModel.create({
-        username: req.session.username,
-        company: company,
-        position: position,
-        jobPosition: jobPosting,
-        info: [{
-          kind: "technical",
-          question: techArray[i],
-          answer: '',
-          feedback: ''
-        }]
-      });
-
-      await InterviewModel.create({
-        username: req.session.username,
-        company: company,
-        position: position,
-        jobPosition: jobPosting,
-        info: [{
-          kind: "Behavorial",
-          question: behavArray[i],
-          answer: '',
-          feedback: ''
-        }]
-      });
-
-      i++;
-    }
-
-    
-
+    const interview = await InterviewModel.create({
+      username: "BarunG",
+      company: company,
+      position: position,
+      jobPosting: jobPosting,
+      info: techQuestionIds.concat(behavQuestionIds)
+    });
 
     res
       .status(200)
       .json("Data Entered");
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error(error);
     res
       .status(500)
       .json({ error: "Failed to generate prompts and paragraphs" });
   }
 });
+
+// return a list of id's of all technical + behavioral questions
+
+async function createQuestionsInDatabase(questionsArray, kind) {
+  const createdQuestions = [];
+  for (const question of questionsArray) {
+    try {
+      const currInstance = await QuestionsModel.create({
+        kind: kind,
+        question: question,
+        answer: '',
+        feedback: ''
+      });
+      createdQuestions.push(currInstance._id);
+    } catch (error) {
+      console.error(`Error creating question:`, error);
+    }
+  }
+  return createdQuestions;
+}
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

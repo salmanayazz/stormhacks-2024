@@ -19,20 +19,10 @@ var interviewSchema = new Schema({
   },
   info: [
     {
-        kind:{
-            type:String
-        },
-        question:{
-            type: String
-        },
-        answer:{
-            type:String
-        },
-        feedback:{
-            type:String
-        }
-    },
-]
+        type: Schema.Types.ObjectId,
+        ref: "Question"
+    }
+    ]
 });
 
 const InterviewModel = model("Interview", interviewSchema);
