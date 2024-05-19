@@ -1,7 +1,9 @@
 import { createContext, useContext } from "react";
 
 export interface Interview {
-  
+  _id: string;
+  position: string;
+  company: string;
 }
 
 export interface InterviewsContextType {
