@@ -37,3 +37,16 @@ Clone the repository
 ```bash
 git clone https://github.com/your-repo/interview-management-server.git
 cd interview-management-server
+```
+
+Install the Dependencies
+
+```bash
+npm install
+```
+
+Run the server
+
+```bash
+npm start
+```
