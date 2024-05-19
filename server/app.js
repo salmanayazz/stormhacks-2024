@@ -190,6 +190,36 @@ async function createQuestionsInDatabase(questionsArray, kind) {
   return createdQuestions;
 }
 
+app.use("/interviews", async (req, res, next) => {
+  if (req.session && req.session.username) {
+    return next();
+  }
+
+  return res.status(401).json({ other: "Unauthorized" });
+});
+
+app.get("/interviews", async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ username: req.session.username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const interviewPromises = user.interviewList.map(interviewId =>
+      InterviewModel.findById(interviewId).populate('info').exec()
+    );
+
+    const interviews = await Promise.all(interviewPromises);
+
+    res.status(200).json(interviews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch interviews" });
+  }
+});
+
+
 app.post("/interviews", async (req, res) => {
   try {
     const { position, company, jobPosting } = req.body;
