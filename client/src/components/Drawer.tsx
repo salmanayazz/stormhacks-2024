@@ -2,6 +2,7 @@ import { Box, Button, IconButton } from '@chakra-ui/react';
 import { CloseIcon, AddIcon, DeleteIcon,  } from '@chakra-ui/icons';
 import { NavLink } from 'react-router-dom';
 import { useInterviews } from '../contexts/interviews/InterviewContext';
+import { useEffect } from 'react';
 
 interface DrawerProps {
   isOpen: boolean;
@@ -9,7 +10,11 @@ interface DrawerProps {
 }
 
 export default function Drawer({ isOpen, onClose }: DrawerProps) {
-  const { interviews } = useInterviews();
+  const { interviews, getInterviews } = useInterviews();
+
+  useEffect(() => {
+    getInterviews();
+  }, []);
 
   return (
     <Box
