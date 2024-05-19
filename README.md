@@ -46,3 +46,10 @@ Our future project aims to revolutionize job searching and career development by
 In addition to consolidating job listings, we are developing a sophisticated feature that analyzes users' resumes to determine how well they match specific job requirements. This tool will offer personalized feedback, highlighting strengths and identifying areas for improvement. By providing actionable insights, users will be able to enhance their profiles and skill sets, increasing their chances of standing out for desired job titles at targeted companies.
 
 Our goal is to create a seamless, intelligent job search and career enhancement platform that empowers users to navigate the job market more effectively and achieve their career aspirations.
+
+### Meet our Team
+
+[Barun Gambhir](https://github.com/barunGambhir)
+[Salman Ayaz](https://github.com/salmanayazz)
+[Gurkirat Singh](https://github.com/GurkiratSingh111)
+
