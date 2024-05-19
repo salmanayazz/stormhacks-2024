@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import {Textarea} from "@chakra-ui/react";
+interface SpeechRecognitionProps {
+    answer: string;
+  }
 
-const SpeechRecognition: React.FC = ({props}: any) => {
+const SpeechRecognition= (props: SpeechRecognitionProps) => {
   const [transcript, setTranscript] = useState<string>('');
   const [interimTranscript, setInterimTranscript] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
