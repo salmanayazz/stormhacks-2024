@@ -3,7 +3,6 @@ const { Schema, model } = require("mongoose");
 var resumeSchema = new Schema({
   username: {
     type: String,
-    required: true,
     unique: true,
   },
   parsedResume: {
