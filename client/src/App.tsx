@@ -5,7 +5,9 @@ import AuthProvider from "./contexts/auth/AuthProvider";
 import CreateInterview from "./pages/CreateInterview";
 import InterviewsProvider from "./contexts/interviews/InterviewProvider";
 import Signup from "./pages/Signup";
+import Interview from "./pages/Interview";
 import Home from "./pages/Home"
+
 function App() {
   return (
     <AuthProvider>
@@ -16,6 +18,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/interviews/create" element={<CreateInterview />} />
+          <Route path="/interviews" element={<Interview />} />
         </Routes>
       </Router>
       </InterviewsProvider>

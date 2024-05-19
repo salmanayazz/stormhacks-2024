@@ -4,6 +4,14 @@ export interface Interview {
   _id: string;
   position: string;
   company: string;
+  info: Question[];
+}
+
+export interface Question {
+  _id: string;
+  question: string;
+  answer: string;
+  feedback: string;
 }
 
 export interface InterviewsContextType {

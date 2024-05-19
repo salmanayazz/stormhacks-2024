@@ -17,7 +17,7 @@ export default function CustomDrawer({ open, onClose }: CustomDrawerProps) {
       <NavLink to="/interviews/create">Create Interview</NavLink>
       
           {interviews.map((interview) => (
-            <div key={interview._id} className="">
+            <NavLink to={`/interviews/${interview._id}`} key={interview._id}>
               <div className="flex">
                 <h2>{interview.position}</h2>
                 <h3>{interview.company}</h3>
@@ -25,7 +25,7 @@ export default function CustomDrawer({ open, onClose }: CustomDrawerProps) {
               <IconButton aria-label="delete">
                 <DeleteIcon />
               </IconButton>
-            </div>
+          </NavLink>
           ))}
         </Drawer>
       );
