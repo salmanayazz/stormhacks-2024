@@ -1,13 +1,11 @@
-import Navbar from "../components/Navbar"
 import SpeechRecognition from "../components/SpeechRecognition"
 
-const Homes = () => {
+const Home = () => {
   return (
     <>
-      <Navbar/>
       <SpeechRecognition/>
     </>
   )
 }
 
-export default Homes
+export default Home;
