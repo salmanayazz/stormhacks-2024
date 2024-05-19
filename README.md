@@ -1,5 +1,7 @@
 ## Welcome to InterviewPrep
 
+Deployed using Defang, click on the [link](https://www.interviewprep.study/)
+
 ### What inspired us to create InterviewPrep
 
 The inspiration for creating InterviewPrep came from a common struggle of nervousness and anxiety experienced by job seekers while answering a question during an interview. As 3rd/ 4th year CS students, we've personally encountered the pressure of showcasing our technical skills and problem-solving abilities during interviews. 
