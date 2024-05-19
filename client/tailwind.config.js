@@ -3,6 +3,9 @@ export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily:{
+        'sedan-sc': ['"Sedan SC"', 'serif'], 
+      },
       colors: {
         pri: {
           100: "#18181b",
