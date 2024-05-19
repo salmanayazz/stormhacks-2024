@@ -9,6 +9,9 @@ var cors = require("cors");
 var dotenv = require("dotenv");
 var mongoose = require("mongoose");
 
+const multer = require('multer');
+const ResumeParser = require('simple-resume-parser');
+
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
@@ -23,6 +26,8 @@ dotenv.config();
 const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY,
 });
+
+const upload = multer({ dest: 'uploads/' });
 
 var app = express();
 
@@ -81,6 +86,19 @@ app.get("/openai", async (req, res) => {
   let content = await main();
   res.send(content);
 })
+
+app.post('/parse-resume', upload.single('resume'), (req, res) => {
+  const filePath = path.join(__dirname, req.file.path);
+  const resume = new ResumeParser(filePath);
+
+  resume.parseToJSON()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(error => {
+      res.status(500).json({ error: error.message });
+    });
+});
 
 // request to OpenAI API to generate interview questions
 
