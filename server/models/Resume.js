@@ -2,8 +2,8 @@ const { Schema, model } = require("mongoose");
 
 var resumeSchema = new Schema({
   username: {
-    type: String,
-    unique: true,
+    type: String,   
+     unique: true,
   },
   parsedResume: {
     type: String,
