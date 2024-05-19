@@ -10,7 +10,17 @@ var dotenv = require("dotenv");
 var mongoose = require("mongoose");
 
 const multer = require('multer');
-const ResumeParser = require('simple-resume-parser');
+const storage = multer.diskStorage({
+  destination: function (reg, file, cb) {
+    cb(null,"./files")
+  },
+  filename: function (reg, file, cb) {
+  const uniqueSuffix = Date.now()
+  cb (null, uniqueSuffix+file.originalname)
+  }
+  })
+  const upload = multer ({ storage: storage })
+const ResumeParser = require('resume-parser');
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -28,7 +38,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY,
 });
 
-const upload = multer({ dest: 'uploads/' });
+
 
 var app = express();
 
@@ -88,19 +98,54 @@ app.get("/openai", async (req, res) => {
   res.send(content);
 })
 
-app.post('/parse-resume', upload.single('resume'), (req, res) => {
-  const filePath = path.join(__dirname, req.file.path);
-  const resume = new ResumeParser(filePath);
-
-  resume.parseToJSON()
+app.post("/uploadresume",upload.single("file"), async(req,res)=>{
+  console.log(req.file);
+  const resumePath = path.join(__dirname, req.file.path);
+  ResumeParser.parseToJSON(resumePath)
     .then(data => {
+      // Clean up the uploaded file
+      fs.unlinkSync(resumePath);
       res.json(data);
     })
     .catch(error => {
-      res.status(500).json({ error: error.message });
+      console.log(error);
+      // Clean up the uploaded file in case of error
+      fs.unlinkSync(resumePath);
+      console.error('Error parsing resume:', error); // Log the error
+      res.status(500).json({ error: 'Failed to parse resume' });
     });
-});
 
+})
+
+// app.post('/parse-resume', upload.single('resume'), (req, res) => {
+//   try{
+
+//   if (!req.file) {
+//     res.status(400).json({ error: 'No file uploaded' });
+//     return;
+//   }
+
+
+//   const resumePath = path.join(__dirname, req.file.path);
+
+//   ResumeParser.parseToJSON(resumePath)
+//     .then(data => {
+//       // Clean up the uploaded file
+//       fs.unlinkSync(resumePath);
+//       res.json(data);
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       // Clean up the uploaded file in case of error
+//       fs.unlinkSync(resumePath);
+//       console.error('Error parsing resume:', error); // Log the error
+//       res.status(500).json({ error: 'Failed to parse resume' });
+//     });
+//   }
+//   catch(error){
+//     console.log(error);
+//   }
+// });
 // request to OpenAI API to generate interview questions
 
 const createInterviewQuestions = async (position, company, jobPosting, kind) => {

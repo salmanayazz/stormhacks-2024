@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const ResumeParserComponent = () => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<any>(null);
   const [result, setResult] = useState(null);
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event: any) => {
     setFile(event.target.files[0]);
   };
 

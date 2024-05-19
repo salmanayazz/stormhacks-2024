@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useInterviews } from "../contexts/interviews/InterviewContext";
+
 import {
   Box,
   Input,
   Textarea,
   Button,
 } from "@chakra-ui/react";
+
 
 export default function CreateInterview() {
   const [formData, setFormData] = useState({
@@ -28,6 +30,7 @@ export default function CreateInterview() {
   };
 
   return (
+
     <Box
       display="flex"
       flexDirection="column"
@@ -70,5 +73,6 @@ export default function CreateInterview() {
         Submit
       </Button>
     </Box>
+
   );
 }
