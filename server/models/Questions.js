@@ -4,7 +4,7 @@ const questionsSchema = new Schema({
     kind: {
         type: String,
         required: true,
-        trim: true // Removes whitespace from the input string
+        trim: true 
     },
     question: {
         type: String,
@@ -22,7 +22,7 @@ const questionsSchema = new Schema({
         trim: true
     }
 }, {
-    timestamps: true // Automatically adds createdAt and updatedAt fields
+    timestamps: true 
 });
 
 const QuestionsModel = model("Question", questionsSchema);

@@ -118,10 +118,30 @@ const createInterviewQuestions = async (position, company, jobPosting, kind) => 
 
 // parse the OpenAI response into different questions
 
-const parseInterviewQuestion = (value) =>{
+const parseInterviewQuestion = (value) => {
   const questions = value.split(/(?=\d\.\s)/);
   const listOfQuestions = questions.map(q => q.replace(/^\d\.\s/, ''))
   return listOfQuestions;
+}
+
+// return a list of id's of all technical + behavioral questions
+
+async function createQuestionsInDatabase(questionsArray, kind) {
+  const createdQuestions = [];
+  for (const question of questionsArray) {
+    try {
+      const currInstance = await QuestionsModel.create({
+        kind: kind,
+        question: question,
+        answer: '',
+        feedback: ''
+      });
+      createdQuestions.push(currInstance._id);
+    } catch (error) {
+      console.error(`Error creating question:`, error);
+    }
+  }
+  return createdQuestions;
 }
 
 app.post("/interviews", async (req, res) => {
@@ -150,8 +170,8 @@ app.post("/interviews", async (req, res) => {
     res
       .status(200)
       .json("Data Entered");
-  } 
-  
+  }
+
   catch (error) {
     console.error(error);
     res
@@ -160,27 +180,61 @@ app.post("/interviews", async (req, res) => {
   }
 });
 
-// return a list of id's of all technical + behavioral questions
+const answerFeedback = async (position, company, jobPosting, question, answer) => {
+  try {
+    const feedback = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: "Please provide some feedback (100-200 words) on the interview question asked to the candidate:" + question
+       + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which the candidate responded with:" + answer }]
+    });
 
-async function createQuestionsInDatabase(questionsArray, kind) {
-  const createdQuestions = [];
-  for (const question of questionsArray) {
-    try {
-      const currInstance = await QuestionsModel.create({
-        kind: kind,
-        question: question,
-        answer: '',
-        feedback: ''
-      });
-      createdQuestions.push(currInstance._id);
-    } catch (error) {
-      console.error(`Error creating question:`, error);
-    }
+    return feedback.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to generate chat completion");
   }
-  return createdQuestions;
-}
+};
 
+app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
+  try {
+    const interviewID = req.params.interviewID;
+    const questionID = req.params.questionID;
 
+    const { ans } = req.body;
+
+    const interview = await InterviewModel.findById(interviewID).populate('info');
+    if (!interview) {
+      return res.status(404).send('Interview not found');
+    }
+    const { username, company, position, jobPosting, info } = interview;
+
+    const questionModel = await QuestionsModel.findById(questionID);
+    if (!questionModel) {
+      return res.status(404).send('Question not found');
+    }
+    const { kind, question, answer, feedback } = questionModel;
+
+    let feed = await answerFeedback(position, company, jobPosting, question, answer);
+
+    const updatedQuestion = await QuestionsModel.findByIdAndUpdate(
+      questionID,
+      { $set: { answer: ans, feedback: feed } },
+      { new: true }
+    );
+    if (!updatedQuestion) {
+      return res.status(404).send('Question not found');
+    }
+
+    res.status(200).json({
+      message: 'Interview found',
+      interviewDetails: { username, company, position, jobPosting, info },
+      questionDetails: { kind, question, answer, feedback }
+    });
+  } catch (error) {
+    console.error('Error fetching interview:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
