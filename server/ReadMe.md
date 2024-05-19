@@ -35,8 +35,8 @@ Contains the **username** and the parsed **resume** of the user.
 Clone the repository
 
 ```bash
-git clone https://github.com/your-repo/interview-management-server.git
-cd interview-management-server
+git clone https://github.com/salmanayazz/stormhacks-2024.git
+cd server
 ```
 
 Install the Dependencies
