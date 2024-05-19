@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {Textarea} from "@chakra-ui/react";
 
-const SpeechRecognition: React.FC = () => {
+const SpeechRecognition: React.FC = ({props}: any) => {
   const [transcript, setTranscript] = useState<string>('');
   const [interimTranscript, setInterimTranscript] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
@@ -61,7 +62,13 @@ const SpeechRecognition: React.FC = () => {
       <button onClick={isListening ? stopListening : startListening}>
         {isListening ? 'Stop Listening' : 'Start Listening'}
       </button>
-      <p>{transcript}</p>
+      <Textarea 
+       value={props.answer}
+       onChange={(event: any) => props.answer = event.target.value}
+       mb={2}
+       variant="filled"
+       colorScheme="primary"
+      >{transcript}</Textarea>
       <p style={{ color: 'gray' }}>{interimTranscript}</p>
     </div>
   );

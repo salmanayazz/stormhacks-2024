@@ -2,6 +2,7 @@ import { useParams } from "react-router";
 import { Question, useInterviews } from "../contexts/interviews/InterviewContext";
 import { Box, Heading, Textarea, Button, Text } from "@chakra-ui/react";
 import { useState } from "react";
+import SpeechRecognition from "../components/SpeechRecognition";
 
 export default function Interview() {
   const { interviewId } = useParams();
@@ -32,6 +33,7 @@ export default function Interview() {
         return (
           <Box key={question._id} mb={6}>
             <Heading as="h3" size="sm" mb={2}>{question.question}</Heading>
+            <SpeechRecognition answer={question.answer} />
             <Textarea
               value={question.answer}
               onChange={(event: any) => question.answer = event.target.value}
