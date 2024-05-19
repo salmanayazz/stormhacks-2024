@@ -95,6 +95,12 @@ const createInterviewQuestions = async (position, company, jobPosting, kind) => 
   }
 };
 
+const parseInterviewQuestion = (value) =>{
+  const questions = str.split(/(?=\d\.\s)/);
+  const listOfQuestions = questions.map(q => q.replace(/^\d\.\s/, ''))
+  return listOfQuestions;
+}
+
 app.post("/interviews", async (req, res) => {
   try {
     const { position, company, jobPosting } = req.body;
