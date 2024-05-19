@@ -22,7 +22,7 @@ const Navbar = () => {
           backgroundColor: 'black',
           color: "white",
         },
-      }}>Upload your Resume Here</Button>
+      }}>Upload your Resume</Button>
         <Button variant="contained"  sx={{
         backgroundColor: 'white',
         color: 'black',
