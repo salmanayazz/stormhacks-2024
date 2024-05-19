@@ -1,10 +1,10 @@
 const { Schema, model, trusted } = require("mongoose");
 
 var interviewSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-  },
+  // username: {
+  //   type: String,
+  //   required: true,
+  // },
   company: {
     type: String,
     required: true

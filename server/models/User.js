@@ -10,6 +10,12 @@ var userSchema = new Schema({
     type: String,
     required: true,
   },
+  interviewList: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Interview"
+    }
+  ]
 });
 
 const UserModel = model("User", userSchema);

@@ -20,6 +20,7 @@ const { InterviewModel } = require("./models/Interview");
 const { QuestionsModel } = require("./models/Questions");
 
 let OpenAI = require('openai');
+const { UserModel } = require("./models/User");
 
 dotenv.config();
 
@@ -160,18 +161,26 @@ app.post("/interviews", async (req, res) => {
     const behavQuestionIds = await createQuestionsInDatabase(behavQuestions, "Behavioral");
 
     const interview = await InterviewModel.create({
-      username: req.session.username,
+      //username: req.session.username,
       company: company,
       position: position,
       jobPosting: jobPosting,
       info: techQuestionIds.concat(behavQuestionIds)
     });
 
+    const username = req.session.username;
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      console.log("User not found");
+      return;
+    }  
+    user.interviewList.push(interview._id);
+    await user.save();
+
     res
       .status(200)
       .json("Data Entered");
   }
-
   catch (error) {
     console.error(error);
     res
