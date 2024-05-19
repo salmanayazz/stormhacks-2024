@@ -50,6 +50,7 @@ Our goal is to create a seamless, intelligent job search and career enhancement 
 ### Installation
 
 To run the server, click [here](https://github.com/salmanayazz/stormhacks-2024/tree/main/server)
+
 To run the client, click [here](https://github.com/salmanayazz/stormhacks-2024/tree/main/client)
 
 ### Meet our Team
