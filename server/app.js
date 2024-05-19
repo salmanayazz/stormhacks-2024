@@ -260,7 +260,7 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
     if (!interview) {
       return res.status(404).send('Interview not found');
     }
-    const { username, company, position, jobPosting, info } = interview;
+    const { company, position, jobPosting, info } = interview;
 
     const questionModel = await QuestionsModel.findById(questionID);
     if (!questionModel) {
@@ -281,7 +281,7 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
 
     res.status(200).json({
       message: 'Interview found',
-      interviewDetails: { username, company, position, jobPosting, info },
+      interviewDetails: { company, position, jobPosting, info },
       questionDetails: { kind, question, answer, feedback }
     });
   } catch (error) {
