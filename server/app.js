@@ -126,7 +126,7 @@ const createInterviewQuestions = async (position, company, jobPosting, kind) => 
     const response = await openai.chat.completions.create({
       //model: "gpt-3.5-turbo",
       model: "gpt-4o",
-      messages: [{ role: "user", content: "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
+      messages: [{ role: "user", content: "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting + "Please provide only the questions and number them and don't provide any heading or sub-headings" }]
     });
 
     return response.choices[0].message.content;
@@ -141,7 +141,7 @@ const createInterviewQuestionsWithResume = async (resume, position, company, job
     const response = await openai.chat.completions.create({
       //model: "gpt-3.5-turbo",
       model: "gpt-4o",
-      messages: [{ role: "user", content: "Here is the resume of the candidate:" + resume + "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
+      messages: [{ role: "user", content: "Here is the resume of the candidate:" + resume + "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting + "Please provide only the questions and number them and don't provide any heading or sub-headings" }]
     });
 
     return response.choices[0].message.content;
@@ -272,7 +272,8 @@ const answerFeedback = async (position, company, jobPosting, question, answer) =
       model: "gpt-4o",
       messages: [{
         role: "user", content: "Please provide me some feedback (100-200 words) on the interview question that was asked to me:" + question
-          + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer
+          + "for the position" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer +
+          "Please jump straight to feedback and don't provide any introductions, heading or sub-headings"
       }]
     });
 
@@ -290,7 +291,7 @@ const answerFeedbackWithResume = async (resume, position, company, jobPosting, q
       model: "gpt-4o",
       messages: [{
         role: "user", content: "Here is my resume:" + resume + "Please provide me some feedback (100-200 words) on the interview question that was asked to me:" + question
-          + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer
+          + "for the position" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer + "Please jump straight to feedback and don't provide any introductions, heading or sub-headings"
       }]
     });
 
