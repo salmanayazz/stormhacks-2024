@@ -39,12 +39,28 @@ const InterviewsProvider: React.FC<InterviewsProviderProps> = ({ children }: Int
     }
   };
 
+  const answerQuestion = async (
+    interviewId: string,
+    questionId: string,
+    answer: string
+  ) => {
+    try {
+      await axiosInstance.post(`/interviews/${interviewId}/questions/${questionId}`, {
+        answer: answer,
+      });
+      await getInterviews();
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
   return (
     <InterviewsContext.Provider
       value={{
         interviews,
         getInterviews,
         createInterview,
+        answerQuestion
       }}
     >
       {children}
