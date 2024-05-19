@@ -122,7 +122,7 @@ app.post("/interviews", async (req, res) => {
     const behavQuestionIds = await createQuestionsInDatabase(behavQuestions, "Behavioral");
 
     const interview = await InterviewModel.create({
-      username: "BarunG",
+      username: req.session.username,
       company: company,
       position: position,
       jobPosting: jobPosting,
