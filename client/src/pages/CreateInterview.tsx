@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useInterviews } from "../contexts/interviews/InterviewContext";
-
+import { Heading } from "@chakra-ui/layout";
 import {
   Box,
   Input,
   Textarea,
   Button,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function CreateInterview() {
@@ -23,9 +24,15 @@ export default function CreateInterview() {
     setFormData({ ...formData, [field]: event.target.value });
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async () => {
     setIsLoading(true);
-    await createInterview(formData.position, formData.company, formData.jobPosting);
+    const _id = await createInterview(formData.position, formData.company, formData.jobPosting);
+    // redirect to the new interview page
+    if (_id) {
+      navigate("/interviews/" + _id);
+    }
     setIsLoading(false);
   };
 
@@ -34,10 +41,14 @@ export default function CreateInterview() {
     <Box
       display="flex"
       flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
       p={8}
     >
+      <Box>
+        <Heading as="h1" size="xl" mb={4}>
+          Create Interview
+        </Heading>
+      </Box>
+
       <Input
         placeholder="Position"
         value={formData.position}
@@ -62,6 +73,8 @@ export default function CreateInterview() {
         variant="filled"
       />
 
+      <Box>
+
       <Button 
         colorScheme="teal" 
         variant="solid"
@@ -72,6 +85,7 @@ export default function CreateInterview() {
       >
         Submit
       </Button>
+      </Box>
     </Box>
 
   );

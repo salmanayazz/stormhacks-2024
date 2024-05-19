@@ -21,7 +21,7 @@ export interface InterviewsContextType {
     position: string,
     company: string,
     jobPosting: string,
-  ) => Promise<void>;
+  ) => Promise<string | undefined>;
   answerQuestion: (
     interviewId: string,
     questionId: string,

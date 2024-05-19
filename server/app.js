@@ -309,7 +309,7 @@ app.post("/interviews", async (req, res) => {
 
     res
       .status(200)
-      .json("Data Entered");
+      .json({_id: interview._id});
   }
   catch (error) {
     console.error(error);

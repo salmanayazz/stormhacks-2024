@@ -28,12 +28,14 @@ const InterviewsProvider: React.FC<InterviewsProviderProps> = ({ children }: Int
     jobPosting: string
   ) => {
     try {
-      await axiosInstance.post("/interviews", {
+      const response = await axiosInstance.post("/interviews", {
         position,
         company,
         jobPosting,
       });
+      
       getInterviews();
+      return response.data._id;
     } catch (error: any) {
       console.log(error);
     }
