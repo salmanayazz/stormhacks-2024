@@ -171,67 +171,31 @@ app.post("/uploadresume", upload.single("file"), async (req, res) => {
       });
       res.status(200).send("New resume created");
     }
-  } catch (err) {
+  } catch (erer) {
     console.error("Error processing upload:", err);
     res.status(500).send("Error processing upload");
   }
 });
-
-// app.post("/uploadresume",upload.single("file"), async(req,res)=>{
-//   console.log(req.file);
-  // const resumePath = path.join(__dirname, req.file.path);
-  // ResumeParser.parseToJSON(resumePath)
-  //   .then(data => {
-  //     // Clean up the uploaded file
-  //     fs.unlinkSync(resumePath);
-  //     res.json(data);
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //     // Clean up the uploaded file in case of error
-  //     fs.unlinkSync(resumePath);
-  //     console.error('Error parsing resume:', error); // Log the error
-  //     res.status(500).json({ error: 'Failed to parse resume' });
-  //   });
-
-// })
-
-// app.post('/parse-resume', upload.single('resume'), (req, res) => {
-//   try{
-
-//   if (!req.file) {
-//     res.status(400).json({ error: 'No file uploaded' });
-//     return;
-//   }
-
-
-//   const resumePath = path.join(__dirname, req.file.path);
-
-//   ResumeParser.parseToJSON(resumePath)
-//     .then(data => {
-//       // Clean up the uploaded file
-//       fs.unlinkSync(resumePath);
-//       res.json(data);
-//     })
-//     .catch(error => {
-//       console.log(error);
-//       // Clean up the uploaded file in case of error
-//       fs.unlinkSync(resumePath);
-//       console.error('Error parsing resume:', error); // Log the error
-//       res.status(500).json({ error: 'Failed to parse resume' });
-//     });
-//   }
-//   catch(error){
-//     console.log(error);
-//   }
-// });
-// request to OpenAI API to generate interview questions
 
 const createInterviewQuestions = async (position, company, jobPosting, kind) => {
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
+    });
+
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to generate chat completion");
+  }
+};
+
+const createInterviewQuestionsWithResume = async (resume, position, company, jobPosting, kind) => {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: "Here is the resume of the candidate:" + resume + "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
     });
 
     return response.choices[0].message.content;
@@ -305,8 +269,20 @@ app.post("/interviews", async (req, res) => {
 
     // TODO: validate the arguments
 
-    let getTechQuestions = await createInterviewQuestions(position, company, jobPosting, "Technical");
-    let getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavioral");
+    const check = await UserModel.findOne({ username: req.session.username });
+
+    let getTechQuestions = ""
+    let getBehavQuestions = ""
+
+    if(check){
+      const resume = check.parsedResume;
+      getTechQuestions = await createInterviewQuestionsWithResume(resume, position, company, jobPosting, "Technical");
+      getBehavQuestions = await createInterviewQuestionsWithResume(resume, position, company, jobPosting, "Behavioral");
+    }
+    else{
+      getTechQuestions = await createInterviewQuestions(position, company, jobPosting, "Technical");
+      getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavioral");
+    }
 
     const techQuestions = parseInterviewQuestion(getTechQuestions);
     const behavQuestions = parseInterviewQuestion(getBehavQuestions);
