@@ -1,12 +1,9 @@
-
-import SpeechRecognition from "../components/SpeechRecognition"
-
 import ResumeUpload from "../components/ResumeUpload"
 
 const Home = () => {
   return (
     <>
-      <SpeechRecognition/>
+      {/* <SpeechRecognition/> */}
       <ResumeUpload/>
     </>
   )

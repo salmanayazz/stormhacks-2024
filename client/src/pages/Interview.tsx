@@ -34,13 +34,7 @@ export default function Interview() {
           <Box key={question._id} mb={6}>
             <Heading as="h3" size="sm" mb={2}>{question.question}</Heading>
             <SpeechRecognition answer={question.answer} />
-            {/* <Textarea
-              value={question.answer}
-              onChange={(event: any) => question.answer = event.target.value}
-              mb={2}
-              variant="filled"
-              colorScheme="primary"
-            /> */}
+
             <Button 
               colorScheme="teal" 
               variant="solid"
