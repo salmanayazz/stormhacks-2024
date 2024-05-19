@@ -34,6 +34,7 @@ export default function Interview() {
             <Heading as="h3" size="sm" mb={2}>{question.question}</Heading>
             <Textarea
               value={question.answer}
+              onChange={(event: any) => question.answer = event.target.value}
               mb={2}
               variant="filled"
               colorScheme="primary"

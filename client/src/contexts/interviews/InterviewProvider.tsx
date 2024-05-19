@@ -45,7 +45,7 @@ const InterviewsProvider: React.FC<InterviewsProviderProps> = ({ children }: Int
     answer: string
   ) => {
     try {
-      await axiosInstance.post(`/interviews/${interviewId}/questions/${questionId}`, {
+      await axiosInstance.post(`/interview/${interviewId}/question/${questionId}`, {
         answer: answer,
       });
       await getInterviews();
