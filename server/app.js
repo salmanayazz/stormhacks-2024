@@ -12,14 +12,14 @@ var mongoose = require("mongoose");
 const multer = require('multer');
 const storage = multer.diskStorage({
   destination: function (reg, file, cb) {
-    cb(null,"./files")
+    cb(null, "./files")
   },
   filename: function (reg, file, cb) {
-  const uniqueSuffix = Date.now()
-  cb (null, uniqueSuffix+file.originalname)
+    const uniqueSuffix = Date.now()
+    cb(null, uniqueSuffix + file.originalname)
   }
-  })
-  const upload = multer ({ storage: storage })
+})
+const upload = multer({ storage: storage })
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -48,62 +48,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-// // pdf implementation begins
-// const {
-//   ServicePrincipalCredentials,
-//   PDFServices,
-//   MimeType,
-//   ExtractPDFParams,
-//   ExtractElementType,
-//   ExtractPDFJob,
-//   ExtractPDFResult
-// } = require("@adobe/pdfservices-node-sdk");
-// const fs = require("fs");
-// const AdmZip = require('adm-zip');
-
-// // Initial setup, create credentials instance
-// const credentials = new ServicePrincipalCredentials({
-//   clientId: process.env.PDF_SERVICES_CLIENT_ID,
-//   clientSecret: process.env.PDF_SERVICES_CLIENT_SECRET
-// });
-
-// // Creates a PDF Services instance
-// const pdfServices = new PDFServices({credentials});
-
-// app.post("/uploadresume", upload.single("file"), async (req, res) => {
-//   const fileName = req.body.filename;
-  
-//   const inputPdfFilePath = `files/${fileName}`;
-//   const readStream = fs.createReadStream(inputPdfFilePath);
-
-//   try {
-//     const inputAsset = await pdfServices.upload({
-//       readStream,
-//       mimeType: MimeType.PDF
-//     });
-
-//     // Extract PDF data
-//     const extractParams = new ExtractPDFParams();
-//     extractParams.addElementsToExtract(ExtractElementType.TEXT);
-
-//     const extractJob = new ExtractPDFJob.Builder(inputAsset, extractParams)
-//       .build();
-
-//     const extractResult = await pdfServices.extractPDF(extractJob);
-
-//     const extractedData = extractResult.getContent();
-//     console.log('Extracted data:', extractedData);
-
-//     res.status(200).json({ success: true, data: extractedData });
-//   } catch (error) {
-//     console.error('Error extracting PDF:', error);
-//     res.status(500).json({ success: false, error: 'Error extracting PDF' });
-//   }
-//   console.log(req.file);
-// });
-
-// /*pdf implementation ends*/
 
 app.use(
   cors({
@@ -151,7 +95,7 @@ app.get("/openai", async (req, res) => {
   res.send(content);
 })
 
-
+// resume parsing to String
 const pdfParse = require("pdf-parse");
 const { ResumeModel } = require("./models/Resume");
 
@@ -180,7 +124,8 @@ app.post("/uploadresume", upload.single("file"), async (req, res) => {
 const createInterviewQuestions = async (position, company, jobPosting, kind) => {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      //model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [{ role: "user", content: "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
     });
 
@@ -194,7 +139,8 @@ const createInterviewQuestions = async (position, company, jobPosting, kind) => 
 const createInterviewQuestionsWithResume = async (resume, position, company, jobPosting, kind) => {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      //model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [{ role: "user", content: "Here is the resume of the candidate:" + resume + "Please create 5" + kind + "interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting }]
     });
 
@@ -274,12 +220,12 @@ app.post("/interviews", async (req, res) => {
     let getTechQuestions = ""
     let getBehavQuestions = ""
 
-    if(check){
+    if (check) {
       const resume = check.parsedResume;
       getTechQuestions = await createInterviewQuestionsWithResume(resume, position, company, jobPosting, "Technical");
       getBehavQuestions = await createInterviewQuestionsWithResume(resume, position, company, jobPosting, "Behavioral");
     }
-    else{
+    else {
       getTechQuestions = await createInterviewQuestions(position, company, jobPosting, "Technical");
       getBehavQuestions = await createInterviewQuestions(position, company, jobPosting, "Behavioral");
     }
@@ -303,13 +249,13 @@ app.post("/interviews", async (req, res) => {
     if (!user) {
       console.log("User not found");
       return;
-    }  
+    }
     user.interviewList.push(interview._id);
     await user.save();
 
     res
       .status(200)
-      .json({_id: interview._id});
+      .json({ _id: interview._id });
   }
   catch (error) {
     console.error(error);
@@ -322,9 +268,30 @@ app.post("/interviews", async (req, res) => {
 const answerFeedback = async (position, company, jobPosting, question, answer) => {
   try {
     const feedback = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: "Please provide some feedback (100-200 words) on the interview question asked to the candidate:" + question
-       + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which the candidate responded with:" + answer }]
+      //model: "gpt-3.5-turbo",
+      model: "gpt-4o",
+      messages: [{
+        role: "user", content: "Please provide me some feedback (100-200 words) on the interview question that was asked to me:" + question
+          + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer
+      }]
+    });
+
+    return feedback.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to generate chat completion");
+  }
+};
+
+const answerFeedbackWithResume = async (resume, position, company, jobPosting, question, answer) => {
+  try {
+    const feedback = await openai.chat.completions.create({
+      //model: "gpt-3.5-turbo",
+      model: "gpt-4o",
+      messages: [{
+        role: "user", content: "Here is my resume:" + resume + "Please provide me some feedback (100-200 words) on the interview question that was asked to me:" + question
+          + "for the psition" + position + "for the company" + company + "with the position description:" + jobPosting + "to which I responded with:" + answer
+      }]
     });
 
     return feedback.choices[0].message.content;
@@ -353,7 +320,16 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
     }
     const { kind, question, answer, feedback } = questionModel;
 
-    let feed = await answerFeedback(position, company, jobPosting, question, answer);
+    const check = await UserModel.findOne({ username: req.session.username });
+
+    let feed = ""
+    if (check) {
+      const resume = check.parsedResume;
+      feed = await answerFeedbackWithResume(resume, position, company, jobPosting, question, answer);
+    }
+    else {
+      feed = await answerFeedback(position, company, jobPosting, question, answer);
+    }
 
     const updatedQuestion = await QuestionsModel.findByIdAndUpdate(
       questionID,
