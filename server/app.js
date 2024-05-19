@@ -13,7 +13,15 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
 
+const { InterviewModel } = require("./models/Interview");
+
+let OpenAI = require('openai');
+
 dotenv.config();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_AI_KEY,
+});
 
 var app = express();
 
@@ -68,6 +76,46 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 
+app.get("/openai", async (req, res) => {
+  let content = await main();
+  res.send(content);
+})
+
+const createInterviewQuestions = async (position, company, jobPosting) => {
+  try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: "Please create 5 technical and 5 behavorial interview questions for the position" + position + "for the company" + company + "with the position description:" + jobPosting}]
+  });
+  
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to generate chat completion");
+    }
+};
+
+
+app.post("/interviews", async (req, res) => {
+  try {
+    const { position, company, jobPosting } = req.body;
+    let getQuestions = await createInterviewQuestions(position, company, jobPosting);
+    const newInterview = await InterviewModel.create({
+      username: "Name4",
+      questions: getQuestions,
+    });
+    res
+      .status(200)
+      .json("Data Entered");
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Failed to generate prompts and paragraphs" });
+  }
+});
+
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -83,5 +131,29 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+async function main(){
+  // const completion = await openai.chat.completions.create({
+  //   messages: [{ role: "system", content: "Qualifications include a Degree in Architecture, Urban Land Economics, Urban Planning and Design, or Engineering in addition to a minimum of 10 years of relevant experience in development and construction in a leadership role and/or an equivalent combination of education, training and experience. The role requires thorough knowledge of architectural design, facility planning, engineering and construction principles and practices as well as BC Building Code, the rules, regulations, and policies governing the construction industry; and Project Management Body of Knowledge (PMBOK) guidelines and standards. You will have the ability to direct the initiation and planning of a variety of major civic buildings and facilities; establish and maintain effective working relationships with a wide variety of internal and external contacts and stakeholders. Working independently and within a team environment, you will partake in problem solving; establishing priorities and accomplish objectives in a timely manner; as well as leading and resolving contract disputes. Other skills required would include the use of various software applications such as MS Office, Enterprise Resource Planning (ERP) and Project Management software. A Driver’s Licence for the Province of British Columbia"}],
+  //   model: "gpt-3.5-turbo",
+  // });
+
+  // return completion.choices[0].message.content;
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: "Please create 5 technical and 5 behavorial interview questions for the position Software Engineer for the company Amazon with the position description Design, develop, and maintain high-performance, scalable software applications"}]
+    });
+
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to generate chat completion");
+  }
+}
+
+
+
+
 
 module.exports = app;
