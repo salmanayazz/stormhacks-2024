@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
   }
   })
   const upload = multer ({ storage: storage })
-const ResumeParser = require('resume-parser');
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -38,8 +37,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY,
 });
 
-
-
 var app = express();
 
 // view engine setup
@@ -51,6 +48,88 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// // pdf implementation begins
+// const {
+//   ServicePrincipalCredentials,
+//   PDFServices,
+//   MimeType,
+//   ExtractPDFParams,
+//   ExtractElementType,
+//   ExtractPDFJob,
+//   ExtractPDFResult
+// } = require("@adobe/pdfservices-node-sdk");
+// const fs = require("fs");
+// const AdmZip = require('adm-zip');
+
+// // Initial setup, create credentials instance
+// const credentials = new ServicePrincipalCredentials({
+//   clientId: process.env.PDF_SERVICES_CLIENT_ID,
+//   clientSecret: process.env.PDF_SERVICES_CLIENT_SECRET
+// });
+
+// // Creates a PDF Services instance
+// const pdfServices = new PDFServices({credentials});
+
+// app.post("/uploadresume", upload.single("file"), async (req, res) => {
+//   const fileName = req.body.filename;
+  
+//   const inputPdfFilePath = `files/${fileName}`;
+//   const readStream = fs.createReadStream(inputPdfFilePath);
+
+//   try {
+//     const inputAsset = await pdfServices.upload({
+//       readStream,
+//       mimeType: MimeType.PDF
+//     });
+
+//     // Extract PDF data
+//     const extractParams = new ExtractPDFParams();
+//     extractParams.addElementsToExtract(ExtractElementType.TEXT);
+
+//     const extractJob = new ExtractPDFJob.Builder(inputAsset, extractParams)
+//       .build();
+
+//     const extractResult = await pdfServices.extractPDF(extractJob);
+
+//     const extractedData = extractResult.getContent();
+//     console.log('Extracted data:', extractedData);
+
+//     res.status(200).json({ success: true, data: extractedData });
+//   } catch (error) {
+//     console.error('Error extracting PDF:', error);
+//     res.status(500).json({ success: false, error: 'Error extracting PDF' });
+//   }
+//   console.log(req.file);
+// });
+
+// /*pdf implementation ends*/
+
+
+const pdfParse = require("pdf-parse");
+const { ResumeModel } = require("./models/Resume");
+
+app.post("/uploadresume", upload.single("file"), async (req, res) => {
+  try {
+    const result = await pdfParse(req.file.path);
+    const existingResume = await ResumeModel.findOne({ username: req.session.username });
+
+    if (existingResume) {
+      existingResume.parsedResume = result.text;
+      await existingResume.save();
+      res.status(200).send("Resume updated successfully");
+    } else {
+      await ResumeModel.create({
+        username: req.session.username,
+        parsedResume: result.text
+      });
+      res.status(200).send("New resume created");
+    }
+  } catch (err) {
+    console.error("Error processing upload:", err);
+    res.status(500).send("Error processing upload");
+  }
+});
 
 app.use(
   cors({
@@ -98,24 +177,24 @@ app.get("/openai", async (req, res) => {
   res.send(content);
 })
 
-app.post("/uploadresume",upload.single("file"), async(req,res)=>{
-  console.log(req.file);
-  const resumePath = path.join(__dirname, req.file.path);
-  ResumeParser.parseToJSON(resumePath)
-    .then(data => {
-      // Clean up the uploaded file
-      fs.unlinkSync(resumePath);
-      res.json(data);
-    })
-    .catch(error => {
-      console.log(error);
-      // Clean up the uploaded file in case of error
-      fs.unlinkSync(resumePath);
-      console.error('Error parsing resume:', error); // Log the error
-      res.status(500).json({ error: 'Failed to parse resume' });
-    });
+// app.post("/uploadresume",upload.single("file"), async(req,res)=>{
+//   console.log(req.file);
+  // const resumePath = path.join(__dirname, req.file.path);
+  // ResumeParser.parseToJSON(resumePath)
+  //   .then(data => {
+  //     // Clean up the uploaded file
+  //     fs.unlinkSync(resumePath);
+  //     res.json(data);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //     // Clean up the uploaded file in case of error
+  //     fs.unlinkSync(resumePath);
+  //     console.error('Error parsing resume:', error); // Log the error
+  //     res.status(500).json({ error: 'Failed to parse resume' });
+  //   });
 
-})
+// })
 
 // app.post('/parse-resume', upload.single('resume'), (req, res) => {
 //   try{
