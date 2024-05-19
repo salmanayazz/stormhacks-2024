@@ -14,6 +14,7 @@ const SpeechRecognition = (props: propsType) => {
   const [transcript, setTranscript] = useState<string>('');
   const [interimTranscript, setInterimTranscript] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const recognitionRef = useRef<any>(null);
   const { answerQuestion } = useInterviews();
@@ -66,8 +67,10 @@ const SpeechRecognition = (props: propsType) => {
     }
   };
 
-  const handleSubmitAnswer = (questionId: string, answer: string) => {
-    answerQuestion(props.interviewId, props.question._id, answer);
+  const handleSubmitAnswer = async (questionId: string, answer: string) => {
+    setIsLoading(true);
+    await answerQuestion(props.interviewId, props.question._id, answer);
+    setIsLoading(false);
     setTranscript('');
     setInterimTranscript('');
   }
@@ -81,20 +84,23 @@ const SpeechRecognition = (props: propsType) => {
        variant="filled"
        colorScheme="primary"
       >{transcript}</Textarea>
-      <Box>
+      <Box display="flex">
+       
         <Button 
           colorScheme="teal" 
           variant="solid"
           mr={2}
           loadingText="Submitting"
+          isLoading={isLoading}
           onClick={() => handleSubmitAnswer(props.question._id, transcript)}
         >
           Submit
         </Button>
-      </Box>
-      <Button onClick={()=>{isListening ? stopListening() : startListening()}} mb={2}>
+        <Button onClick={()=>{isListening ? stopListening() : startListening()}} mb={2}>
                 {isListening ? <Icon as={FiMicOff} /> : <Icon as={FiMic} />}
-        </Button> 
+        </Button>
+      </Box>
+      
       
       <p style={{ color: 'gray' }}>{interimTranscript}</p>
     </div>
