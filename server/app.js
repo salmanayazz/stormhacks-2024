@@ -307,8 +307,6 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
     const interviewID = req.params.interviewID;
     const questionID = req.params.questionID;
 
-    const { ans } = req.body;
-
     const interview = await InterviewModel.findById(interviewID).populate('info');
     if (!interview) {
       return res.status(404).send('Interview not found');
@@ -319,7 +317,8 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
     if (!questionModel) {
       return res.status(404).send('Question not found');
     }
-    const { kind, question, answer, feedback } = questionModel;
+
+    const { kind, question, feedback, answer } = questionModel;
 
     const check = await UserModel.findOne({ username: req.session.username });
 
@@ -334,7 +333,7 @@ app.post('/interview/:interviewID/question/:questionID', async (req, res) => {
 
     const updatedQuestion = await QuestionsModel.findByIdAndUpdate(
       questionID,
-      { $set: { answer: ans, feedback: feed } },
+      { $set: { answer: req.body.answer, feedback: feed } },
       { new: true }
     );
     if (!updatedQuestion) {
