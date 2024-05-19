@@ -22,7 +22,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/interviews/create" element={<CreateInterview />} />
-              <Route path="/interviews" element={<Interview />} />
+              <Route path="/interviews/:interviewId" element={<Interview />} />
             </Route>
           </Routes>
         </Router>
