@@ -58,21 +58,8 @@ export default function Interview() {
                 variant="filled"
                 colorScheme="primary"
               />
-            </Box>}
-            {/* <Box mb={2}>
-              <Textarea
-                value={currentAnswer}
-                onChange={(e: any) => setAnswers((prevAnswers) => ({ ...prevAnswers, [question._id]: e.target.value }))}
-                mb={2}
-                variant="filled"
-                colorScheme="primary"
-              />
-            </Box> */}
-            {isChecked &&<Box mb={2}>
-              <SpeechRecognition />
-            </Box> }
-            <Box display="flex">
-              <Button 
+
+                <Button 
                 colorScheme="teal" 
                 variant="solid"
                 mr={2}
@@ -82,9 +69,17 @@ export default function Interview() {
               >
                 Submit
               </Button>
-              {/* <Button onClick={isListening ? stopListening : () => startListening(question._id)} mb={2}>
-                {isListening && currentQuestionId === question._id ? <Icon as={FiMicOff} /> : <Icon as={FiMic} />}
-              </Button> */}
+            </Box>}
+  
+            {isChecked &&<Box mb={2}>
+            <SpeechRecognition 
+                question={question}
+                interviewId={interviewId!}
+              />
+            </Box> }
+            <Box display="flex">
+              
+              
             </Box>
             <Text>{question.feedback}</Text>
           </Box>

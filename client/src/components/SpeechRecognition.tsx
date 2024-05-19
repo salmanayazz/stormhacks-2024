@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {Button, Icon, Textarea} from "@chakra-ui/react";
 import { FiMic, FiMicOff } from 'react-icons/fi';
+import { Box } from '@chakra-ui/layout';
+import { Question, useInterviews } from '../contexts/interviews/InterviewContext';
+
 interface propsType {
     answer: string | undefined,
     setAudioText: (answer: string) => void
+    question: Question,
+    interviewId: string
 }
-const SpeechRecognition = () => {
+const SpeechRecognition = (props: propsType) => {
   const [transcript, setTranscript] = useState<string>('');
   const [interimTranscript, setInterimTranscript] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
 
   const recognitionRef = useRef<any>(null);
+  const { answerQuestion } = useInterviews();
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -60,6 +66,12 @@ const SpeechRecognition = () => {
     }
   };
 
+  const handleSubmitAnswer = (questionId: string, answer: string) => {
+    answerQuestion(props.interviewId, props.question._id, answer);
+    setTranscript('');
+    setInterimTranscript('');
+  }
+
   return (
     <div>
       <Textarea 
@@ -69,9 +81,21 @@ const SpeechRecognition = () => {
        variant="filled"
        colorScheme="primary"
       >{transcript}</Textarea>
+      <Box>
+        <Button 
+          colorScheme="teal" 
+          variant="solid"
+          mr={2}
+          loadingText="Submitting"
+          onClick={() => handleSubmitAnswer(props.question._id, transcript)}
+        >
+          Submit
+        </Button>
+      </Box>
       <Button onClick={()=>{isListening ? stopListening() : startListening()}} mb={2}>
                 {isListening ? <Icon as={FiMicOff} /> : <Icon as={FiMic} />}
         </Button> 
+      
       <p style={{ color: 'gray' }}>{interimTranscript}</p>
     </div>
   );
